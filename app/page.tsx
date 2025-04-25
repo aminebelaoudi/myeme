@@ -85,30 +85,36 @@ const formatText = (text: string) => {
   return formattedText;
 };
 
-export default function Chat(props: { apiKeyApp: string }) {
-  // Input States
+interface PageProps {
+  params: {};
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default function Chat({ params, searchParams }: PageProps) {
+  // État pour la clé API
+  const [apiKey, setApiKey] = useState<string>('');
+  
+  // Reste des états
   const [inputOnSubmit, setInputOnSubmit] = useState<string>('');
   const [inputCode, setInputCode] = useState<string>('');
-  // Response message
   const [outputCode, setOutputCode] = useState<string>('');
-  // Model
   const [model, setModel] = useState<AIModel>('gemini-1.5-flash');
-  // Loading state
   const [loading, setLoading] = useState<boolean>(false);
-  // Messages history
   const [messages, setMessages] = useState<Message[]>([]);
-  // Roman sélectionné
   const [selectedRoman, setSelectedRoman] = useState<string>('');
-  // Étape actuelle
   const [step, setStep] = useState<'selection' | 'sujet' | 'redaction' | 'evaluation'>('selection');
-  // Texte de l'étudiant
   const [studentText, setStudentText] = useState<string>('');
-  // Sujet généré
   const [generatedSubject, setGeneratedSubject] = useState<string>('');
-  // Toast pour les notifications
   const toast = useToast();
-  // Modal pour l'évaluation
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  // Effet pour récupérer la clé API du localStorage
+  useEffect(() => {
+    const storedApiKey = localStorage.getItem('apiKey');
+    if (storedApiKey) {
+      setApiKey(storedApiKey);
+    }
+  }, []);
 
   // API Key
   const borderColor = useColorModeValue('gray.200', 'whiteAlpha.200');
